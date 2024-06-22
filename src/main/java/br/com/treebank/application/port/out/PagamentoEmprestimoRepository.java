@@ -9,5 +9,5 @@ public interface PagamentoEmprestimoRepository {
     List<PagamentoEmprestimo> findAll();
     Optional<PagamentoEmprestimo> findById(Long id);
     PagamentoEmprestimo save (PagamentoEmprestimo pagamentoEmprestimo);
-    void deleteById();
+    void deleteById(Long id);
 }
