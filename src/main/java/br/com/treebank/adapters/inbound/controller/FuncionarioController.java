@@ -7,6 +7,7 @@ import br.com.treebank.adapters.inbound.request.FuncionarioRequest;
 import br.com.treebank.adapters.inbound.response.FuncionarioResponse;
 import br.com.treebank.application.core.domain.Funcionario;
 import br.com.treebank.application.ports.in.FuncionarioServicePort;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class FuncionarioController {
     private final FuncionarioEntityToFuncionarioMapper funcionarioEntityToFuncionarioMapper;
 
     @PostMapping
-    public FuncionarioResponse salvarFuncionario(@RequestBody FuncionarioRequest funcionarioRequest) {
+    public FuncionarioResponse salvarFuncionario(@RequestBody @Valid FuncionarioRequest funcionarioRequest) {
         Funcionario funcionario = funcionarioRequestToFuncionarioMapper.mapper(funcionarioRequest);
         Funcionario savedFuncionario = funcionarioServicePort.salvar(funcionario);
         return funcionarioEntityToFuncionarioResponseMapper.toResponse(funcionarioEntityToFuncionarioMapper.toEntity(savedFuncionario));
@@ -47,7 +48,7 @@ public class FuncionarioController {
     }
 
     @PutMapping("/{id}")
-    public FuncionarioResponse atualizarFuncionario(@PathVariable Long id, @RequestBody FuncionarioRequest funcionarioRequest) {
+    public FuncionarioResponse atualizarFuncionario(@PathVariable Long id, @RequestBody @Valid FuncionarioRequest funcionarioRequest) {
         Funcionario funcionario = funcionarioRequestToFuncionarioMapper.mapper(funcionarioRequest);
         funcionario.setId(id);
         Funcionario updatedFuncionario = funcionarioServicePort.atualizar(funcionario);

@@ -9,6 +9,7 @@ import br.com.treebank.application.core.domain.Agencia;
 import br.com.treebank.application.core.domain.Funcionario;
 import br.com.treebank.application.ports.in.AgenciaServicePort;
 import br.com.treebank.application.ports.in.FuncionarioServicePort;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class AgenciaController {
     private final AgenciaEntityToAgenciaMapper agenciaEntityToAgenciaMapper;
 
     @PostMapping
-    public AgenciaResponse salvarAgencia(@RequestBody AgenciaRequest agenciaRequest) {
+    public AgenciaResponse salvarAgencia(@RequestBody @Valid AgenciaRequest agenciaRequest) {
         Agencia agencia = agenciaRequestToAgenciaMapper.mapper(agenciaRequest);
         if (agenciaRequest.getGerenteId() != null) {
             Funcionario gerente = funcionarioServicePort.buscarPorId(agenciaRequest.getGerenteId());
@@ -54,7 +55,7 @@ public class AgenciaController {
     }
 
     @PutMapping("/{id}")
-    public AgenciaResponse atualizarAgencia(@PathVariable Long id, @RequestBody AgenciaRequest agenciaRequest) {
+    public AgenciaResponse atualizarAgencia(@PathVariable Long id, @RequestBody @Valid AgenciaRequest agenciaRequest) {
         Agencia agencia = agenciaRequestToAgenciaMapper.mapper(agenciaRequest);
         agencia.setId(id);
         if (agenciaRequest.getGerenteId() != null) {

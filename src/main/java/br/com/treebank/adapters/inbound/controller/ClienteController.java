@@ -7,6 +7,7 @@ import br.com.treebank.adapters.inbound.request.ClienteRequest;
 import br.com.treebank.adapters.inbound.response.ClienteResponse;
 import br.com.treebank.application.core.domain.Cliente;
 import br.com.treebank.application.ports.in.ClienteServicePort;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class ClienteController {
     private final ClienteEntityToClienteMapper clienteEntityToClienteMapper;
 
     @PostMapping
-    public ClienteResponse salvarCliente(@RequestBody ClienteRequest clienteRequest) {
+    public ClienteResponse salvarCliente(@RequestBody @Valid ClienteRequest clienteRequest) {
         Cliente cliente = clienteRequestToClienteMapper.mapper(clienteRequest);
         Cliente savedCliente = clienteServicePort.salvar(cliente);
         return clienteEntityToClienteResponseMapper.toResponse(clienteEntityToClienteMapper.toEntity(savedCliente));
@@ -47,7 +48,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ClienteResponse atualizarCliente(@PathVariable Long id, @RequestBody ClienteRequest clienteRequest) {
+    public ClienteResponse atualizarCliente(@PathVariable Long id, @RequestBody @Valid ClienteRequest clienteRequest) {
         Cliente cliente = clienteRequestToClienteMapper.mapper(clienteRequest);
         cliente.setId(id);
         Cliente updatedCliente = clienteServicePort.atualizar(cliente);

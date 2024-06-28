@@ -7,6 +7,7 @@ import br.com.treebank.adapters.inbound.request.PessoaRequest;
 import br.com.treebank.adapters.inbound.response.PessoaResponse;
 import br.com.treebank.application.core.domain.Pessoa;
 import br.com.treebank.application.ports.in.PessoaServicePort;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class PessoaController {
     private final PessoaEntityToPessoaMapper pessoaEntityToPessoaMapper;
 
     @PostMapping
-    public PessoaResponse salvarPessoa(@RequestBody PessoaRequest pessoaRequest) {
+    public PessoaResponse salvarPessoa(@RequestBody @Valid PessoaRequest pessoaRequest) {
         Pessoa pessoa = pessoaRequestToPessoaMapper.mapper(pessoaRequest);
         Pessoa savedPessoa = pessoaServicePort.salvar(pessoa);
         return pessoaEntityToPessoaResponseMapper.toResponse(pessoaEntityToPessoaMapper.toEntity(savedPessoa));
@@ -47,7 +48,7 @@ public class PessoaController {
     }
 
     @PutMapping("/{id}")
-    public PessoaResponse atualizarPessoa(@PathVariable Long id, @RequestBody PessoaRequest pessoaRequest) {
+    public PessoaResponse atualizarPessoa(@PathVariable Long id, @RequestBody @Valid PessoaRequest pessoaRequest) {
         Pessoa pessoa = pessoaRequestToPessoaMapper.mapper(pessoaRequest);
         pessoa.setId(id);
         Pessoa updatedPessoa = pessoaServicePort.atualizar(pessoa);

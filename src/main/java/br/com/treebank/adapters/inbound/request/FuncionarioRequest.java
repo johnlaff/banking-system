@@ -1,18 +1,17 @@
 package br.com.treebank.adapters.inbound.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class FuncionarioRequest extends PessoaRequest {
 
-@Getter
-@Setter
-public class FuncionarioRequest {
-    private String nome;
-    private String endereco;
-    private String telefone;
-    private String email;
-    private LocalDate dataNascimento;
+    @NotBlank(message = "Cargo é obrigatório")
+    @Size(max = 50, message = "Cargo deve ter no máximo 50 caracteres")
     private String cargo;
+
+    @NotNull(message = "ID da agência é obrigatório")
     private Long agenciaId;
 }
