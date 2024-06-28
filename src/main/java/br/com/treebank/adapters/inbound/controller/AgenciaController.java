@@ -1,43 +1,41 @@
 package br.com.treebank.adapters.inbound.controller;
 
-import br.com.treebank.adapters.inbound.mapper.AgenciaEntityToAgenciaMapper;
 import br.com.treebank.adapters.inbound.mapper.AgenciaRequestToAgenciaMapper;
 import br.com.treebank.adapters.inbound.mapper.AgenciaEntityToAgenciaResponseMapper;
+import br.com.treebank.adapters.inbound.mapper.AgenciaEntityToAgenciaMapper;
 import br.com.treebank.adapters.inbound.request.AgenciaRequest;
 import br.com.treebank.adapters.inbound.response.AgenciaResponse;
 import br.com.treebank.application.core.domain.Agencia;
-import br.com.treebank.application.core.domain.Funcionario;
 import br.com.treebank.application.ports.in.AgenciaServicePort;
-import br.com.treebank.application.ports.in.FuncionarioServicePort;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/agencia")
 @AllArgsConstructor
+@Tag(name = "Agencia", description = "Gerenciamento de agências")
 public class AgenciaController {
     private final AgenciaServicePort agenciaServicePort;
-    private final FuncionarioServicePort funcionarioServicePort;
     private final AgenciaRequestToAgenciaMapper agenciaRequestToAgenciaMapper;
     private final AgenciaEntityToAgenciaResponseMapper agenciaEntityToAgenciaResponseMapper;
     private final AgenciaEntityToAgenciaMapper agenciaEntityToAgenciaMapper;
 
     @PostMapping
-    public AgenciaResponse salvarAgencia(@RequestBody @Valid AgenciaRequest agenciaRequest) {
+    @Operation(summary = "Criar nova agência", description = "Cria uma nova agência com os dados fornecidos")
+    public AgenciaResponse salvarAgencia(@Valid @RequestBody AgenciaRequest agenciaRequest) {
         Agencia agencia = agenciaRequestToAgenciaMapper.mapper(agenciaRequest);
-        if (agenciaRequest.getGerenteId() != null) {
-            Funcionario gerente = funcionarioServicePort.buscarPorId(agenciaRequest.getGerenteId());
-            agencia.setGerente(gerente);
-        }
         Agencia savedAgencia = agenciaServicePort.salvar(agencia);
         return agenciaEntityToAgenciaResponseMapper.toResponse(agenciaEntityToAgenciaMapper.toEntity(savedAgencia));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar agência por ID", description = "Retorna uma agência baseada no ID fornecido")
     public AgenciaResponse buscarPorId(@PathVariable Long id) {
         Agencia agencia = agenciaServicePort.buscarPorId(id);
         if (agencia == null) {
@@ -47,6 +45,7 @@ public class AgenciaController {
     }
 
     @GetMapping
+    @Operation(summary = "Listar todas as agências", description = "Retorna uma lista de todas as agências")
     public List<AgenciaResponse> listarTodos() {
         return agenciaServicePort.listarTodos()
                 .stream()
@@ -55,18 +54,16 @@ public class AgenciaController {
     }
 
     @PutMapping("/{id}")
-    public AgenciaResponse atualizarAgencia(@PathVariable Long id, @RequestBody @Valid AgenciaRequest agenciaRequest) {
+    @Operation(summary = "Atualizar agência", description = "Atualiza os dados de uma agência existente")
+    public AgenciaResponse atualizarAgencia(@PathVariable Long id, @Valid @RequestBody AgenciaRequest agenciaRequest) {
         Agencia agencia = agenciaRequestToAgenciaMapper.mapper(agenciaRequest);
         agencia.setId(id);
-        if (agenciaRequest.getGerenteId() != null) {
-            Funcionario gerente = funcionarioServicePort.buscarPorId(agenciaRequest.getGerenteId());
-            agencia.setGerente(gerente);
-        }
         Agencia updatedAgencia = agenciaServicePort.atualizar(agencia);
         return agenciaEntityToAgenciaResponseMapper.toResponse(agenciaEntityToAgenciaMapper.toEntity(updatedAgencia));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar agência", description = "Deleta uma agência existente baseada no ID fornecido")
     public void deletarAgencia(@PathVariable Long id) {
         agenciaServicePort.deletarPorId(id);
     }
