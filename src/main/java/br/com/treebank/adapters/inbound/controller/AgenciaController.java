@@ -1,10 +1,13 @@
 package br.com.treebank.adapters.inbound.controller;
 
+import br.com.treebank.adapters.inbound.entity.FuncionarioEntity;
 import br.com.treebank.adapters.inbound.mapper.AgenciaRequestToAgenciaMapper;
 import br.com.treebank.adapters.inbound.mapper.AgenciaEntityToAgenciaResponseMapper;
 import br.com.treebank.adapters.inbound.mapper.AgenciaEntityToAgenciaMapper;
+import br.com.treebank.adapters.inbound.mapper.FuncionarioEntityToFuncionarioMapper;
 import br.com.treebank.adapters.inbound.request.AgenciaRequest;
 import br.com.treebank.adapters.inbound.response.AgenciaResponse;
+import br.com.treebank.adapters.outbound.repository.FuncionarioRepository;
 import br.com.treebank.application.core.domain.Agencia;
 import br.com.treebank.application.ports.in.AgenciaServicePort;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,11 +28,15 @@ public class AgenciaController {
     private final AgenciaRequestToAgenciaMapper agenciaRequestToAgenciaMapper;
     private final AgenciaEntityToAgenciaResponseMapper agenciaEntityToAgenciaResponseMapper;
     private final AgenciaEntityToAgenciaMapper agenciaEntityToAgenciaMapper;
+    private final FuncionarioRepository funcionarioRepository;
+    private final FuncionarioEntityToFuncionarioMapper funcionarioEntityToFuncionarioMapper;
 
     @PostMapping
     @Operation(summary = "Criar nova agência", description = "Cria uma nova agência com os dados fornecidos")
     public AgenciaResponse salvarAgencia(@Valid @RequestBody AgenciaRequest agenciaRequest) {
         Agencia agencia = agenciaRequestToAgenciaMapper.mapper(agenciaRequest);
+        FuncionarioEntity gerenteEntity = funcionarioRepository.findById(agenciaRequest.getGerenteId()).orElse(null);
+        agencia.setGerente(funcionarioEntityToFuncionarioMapper.toDomain(gerenteEntity));
         Agencia savedAgencia = agenciaServicePort.salvar(agencia);
         return agenciaEntityToAgenciaResponseMapper.toResponse(agenciaEntityToAgenciaMapper.toEntity(savedAgencia));
     }
